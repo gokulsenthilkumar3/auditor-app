@@ -1,0 +1,129 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  CA
+  TAXPAYER
+}
+
+enum AccountType {
+  SAVINGS
+  CURRENT
+  DEBT
+  CREDIT_CARD
+  DEMAT
+  TRADING
+}
+
+enum AssetType {
+  STOCK
+  MUTUAL_FUND
+  FD
+  RD
+  BOND
+  COMMODITY
+  CRYPTO
+  NFT
+}
+
+enum DocumentStatus {
+  PENDING
+  PROCESSING
+  DONE
+  FAILED
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String
+  email         String    @unique
+  phone         String?
+  pan           String?   @unique
+  aadhaar       String?   @unique
+  role          UserRole  @default(TAXPAYER)
+  caId          String?   // assigned CA
+  ca            User?     @relation("CATaxpayers", fields: [caId], references: [id])
+  clients       User[]    @relation("CATaxpayers")
+  accounts      BankAccount[]
+  portfolios    Portfolio[]
+  documents     Document[]
+  taxReturns    TaxReturn[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model BankAccount {
+  id            String      @id @default(cuid())
+  userId        String
+  user          User        @relation(fields: [userId], references: [id])
+  accountType   AccountType
+  bankName      String
+  accountNumber String
+  ifsc          String?
+  balance       Float       @default(0)
+  currency      String      @default("INR")
+  isLinked      Boolean     @default(false)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model Portfolio {
+  id            String    @id @default(cuid())
+  userId        String
+  user          User      @relation(fields: [userId], references: [id])
+  assetType     AssetType
+  name          String
+  symbol        String?
+  quantity      Float
+  avgBuyPrice   Float
+  currentPrice  Float?
+  purchaseDate  DateTime?
+  maturityDate  DateTime?
+  interestRate  Float?    // for FD/RD/Bond
+  platform      String?   // Zerodha, Groww, etc.
+  metadata      Json?     // extra data like ISIN, exchange
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Document {
+  id            String          @id @default(cuid())
+  userId        String
+  user          User            @relation(fields: [userId], references: [id])
+  fileName      String
+  fileType      String          // pdf, xlsx, docx, jpg, png, etc.
+  fileUrl       String
+  status        DocumentStatus  @default(PENDING)
+  extractedData Json?           // AI parsed output
+  summary       String?         // AI summary
+  taxYear       String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+}
+
+model TaxReturn {
+  id              String    @id @default(cuid())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id])
+  taxYear         String    // e.g., "2025-26"
+  regime          String    @default("NEW")  // OLD or NEW
+  grossIncome     Float     @default(0)
+  totalDeductions Float     @default(0)
+  taxableIncome   Float     @default(0)
+  taxPayable      Float     @default(0)
+  tdsDeducted     Float     @default(0)
+  advanceTaxPaid  Float     @default(0)
+  refundDue       Float     @default(0)
+  status          String    @default("DRAFT") // DRAFT, FILED, REVISED
+  itrType         String?   // ITR-1, ITR-2, etc.
+  filedOn         DateTime?
+  metadata        Json?     // deduction details, capital gains breakdown
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
