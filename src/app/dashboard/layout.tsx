@@ -14,6 +14,7 @@ import {
   Settings,
   LogOut,
   Sparkles,
+  ChevronRight,
 } from 'lucide-react'
 
 const navGroups = [
@@ -43,7 +44,7 @@ const navGroups = [
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex min-h-screen bg-[#f1f4f9]">
+    <div className="flex min-h-screen" style={{ background: '#07091a' }}>
       <Sidebar />
       <main className="flex-1 overflow-auto min-w-0">
         {children}
@@ -59,39 +60,60 @@ function Sidebar() {
     exact ? pathname === href : pathname === href || pathname.startsWith(href + '/')
 
   return (
-    <aside className="w-64 shrink-0 flex flex-col h-screen sticky top-0 bg-[#0c1220]">
-      {/* Logo */}
-      <div className="px-5 py-5">
+    <aside
+      className="w-[220px] shrink-0 flex flex-col h-screen sticky top-0"
+      style={{
+        background: '#0a0c1e',
+        borderRight: '1px solid rgba(255,255,255,0.06)',
+      }}
+    >
+      {/* ── Logo ─────────────────────────────────────── */}
+      <div className="px-5 pt-6 pb-5">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-base shadow-lg shadow-indigo-900/40">
+          <div
+            className="w-9 h-9 rounded-xl flex items-center justify-center text-base shrink-0"
+            style={{
+              background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+              boxShadow: '0 4px 15px rgba(99,102,241,0.4)',
+            }}
+          >
             🧾
           </div>
           <div>
-            <p className="font-bold text-white text-sm tracking-tight">Auditor App</p>
-            <p className="text-[11px] text-slate-500 font-medium tracking-wide uppercase">CA Portal</p>
+            <p className="font-bold text-white text-sm leading-tight tracking-tight">AuditPro</p>
+            <p className="text-[10px] font-semibold tracking-widest uppercase" style={{ color: '#4b5563' }}>CA Portal</p>
           </div>
         </div>
       </div>
 
-      {/* CA Profile chip */}
-      <div className="mx-3 mb-2">
-        <div className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl bg-white/5 border border-white/8">
-          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-400 to-violet-500 flex items-center justify-center text-xs font-bold text-white shrink-0">
+      {/* ── CA Profile chip ───────────────────────────── */}
+      <div className="px-3 mb-5">
+        <div
+          className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl"
+          style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}
+        >
+          <div
+            className="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold text-white shrink-0"
+            style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)' }}
+          >
             CA
           </div>
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             <p className="text-white text-xs font-semibold leading-tight truncate">Admin User</p>
-            <p className="text-slate-500 text-[10px] leading-tight">Chartered Accountant</p>
+            <p className="text-[10px] leading-tight" style={{ color: '#4b5563' }}>Chartered Accountant</p>
           </div>
-          <Sparkles size={12} className="text-indigo-400 shrink-0 ml-auto" />
+          <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" style={{ boxShadow: '0 0 6px #10b981' }} />
         </div>
       </div>
 
-      {/* Nav Groups */}
-      <nav className="flex-1 px-3 py-2 overflow-y-auto space-y-4">
+      {/* ── Nav Groups ───────────────────────────────── */}
+      <nav className="flex-1 px-3 overflow-y-auto space-y-5">
         {navGroups.map((group) => (
           <div key={group.label}>
-            <p className="text-[10px] font-bold tracking-widest uppercase text-slate-600 px-3 mb-1.5">
+            <p
+              className="text-[10px] font-bold tracking-widest uppercase px-3 mb-2"
+              style={{ color: '#374151' }}
+            >
               {group.label}
             </p>
             <div className="space-y-0.5">
@@ -101,17 +123,17 @@ function Sidebar() {
                   <Link
                     key={href}
                     href={href}
-                    className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 group relative ${
-                      active
-                        ? 'bg-indigo-600 text-white shadow-md shadow-indigo-900/30'
-                        : 'text-slate-400 hover:bg-white/5 hover:text-slate-200'
-                    }`}
+                    className={`sidebar-nav-link ${active ? 'active' : ''}`}
                   >
+                    <Icon
+                      size={15}
+                      className={active ? 'text-indigo-400' : 'text-slate-600'}
+                      style={{ transition: 'color 0.15s' }}
+                    />
+                    <span className="flex-1 truncate">{label}</span>
                     {active && (
-                      <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-4 bg-indigo-300 rounded-r-full" />
+                      <ChevronRight size={12} className="text-indigo-500 shrink-0" />
                     )}
-                    <Icon size={16} className={active ? 'text-indigo-200' : 'text-slate-500 group-hover:text-slate-300'} />
-                    <span className="flex-1">{label}</span>
                   </Link>
                 )
               })}
@@ -120,25 +142,54 @@ function Sidebar() {
         ))}
       </nav>
 
-      {/* Footer */}
-      <div className="px-3 py-3 border-t border-white/5 space-y-0.5">
+      {/* ── AI Tip Banner ─────────────────────────────── */}
+      <div className="px-3 mb-3">
+        <div
+          className="rounded-xl p-3"
+          style={{
+            background: 'linear-gradient(135deg, rgba(99,102,241,0.15), rgba(139,92,246,0.12))',
+            border: '1px solid rgba(99,102,241,0.2)',
+          }}
+        >
+          <div className="flex items-center gap-2 mb-1.5">
+            <Sparkles size={12} className="text-indigo-400" />
+            <span className="text-[11px] font-bold text-indigo-300">AI Insight</span>
+          </div>
+          <p className="text-[11px] leading-relaxed" style={{ color: '#6b7280' }}>
+            3 clients have advance tax due in 12 days.
+          </p>
+        </div>
+      </div>
+
+      {/* ── Footer ───────────────────────────────────── */}
+      <div
+        className="px-3 py-3 space-y-0.5"
+        style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}
+      >
         <Link
           href="/dashboard/notifications"
-          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-white/5 hover:text-slate-200 transition-all relative"
+          className="sidebar-nav-link"
         >
-          <Bell size={16} className="text-slate-500" />
-          <span>Notifications</span>
-          <span className="ml-auto bg-red-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">3</span>
+          <Bell size={15} className="text-slate-600" />
+          <span className="flex-1">Notifications</span>
+          <span
+            className="text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center shrink-0"
+            style={{ background: '#ef4444', color: 'white' }}
+          >
+            3
+          </span>
         </Link>
         <Link
           href="/dashboard/settings"
-          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-white/5 hover:text-slate-200 transition-all"
+          className="sidebar-nav-link"
         >
-          <Settings size={16} className="text-slate-500" />
+          <Settings size={15} className="text-slate-600" />
           <span>Settings</span>
         </Link>
-        <button className="flex w-full items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-500 hover:bg-red-500/10 hover:text-red-400 transition-all">
-          <LogOut size={16} />
+        <button
+          className="sidebar-nav-link w-full text-left hover:!bg-red-500/10 hover:!text-red-400"
+        >
+          <LogOut size={15} className="text-slate-600" />
           <span>Sign Out</span>
         </button>
       </div>
